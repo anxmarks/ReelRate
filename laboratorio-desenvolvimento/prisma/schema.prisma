@@ -1,0 +1,30 @@
+//ANALISAR ESTRUTURA DAS TABELAS E DEPOIS RODAR: npx prisma migrate dev --name init
+
+
+model User {
+  id        String  @id @default(uuid())
+  name      String?
+  email     String  @unique
+  image     String?
+  accounts  Account[]
+  sessions  Session[]
+}
+
+model Account {
+  id                String  @id @default(uuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  access_token      String?
+  refresh_token     String?
+  user              User    @relation(fields: [userId], references: [id])
+}
+
+model Session {
+  id           String  @id @default(uuid())
+  sessionToken String  @unique
+  userId       String
+  expires      DateTime
+  user         User    @relation(fields: [userId], references: [id])
+}
