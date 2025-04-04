@@ -16,7 +16,6 @@ declare module "next-auth" {
   }
 }
 
-
 export const authOptions = {
   providers: [
     CredentialsProvider({
@@ -58,7 +57,6 @@ export const authOptions = {
             data: {
               nome: user.name,
               email: user.email,
-              senha: user.senha
             },
           });
         }
