@@ -3,7 +3,8 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import { JWT } from "next-auth/jwt";
 import { Session } from "next-auth";
-import {prisma} from "@/app/lib/prisma"
+import { prisma } from "@/app/lib/prisma";
+import bcrypt from "bcrypt";
 
 declare module "next-auth" {
   interface Session {
@@ -25,15 +26,20 @@ export const authOptions = {
         password: { label: "Senha", type: "password" },
       },
       async authorize(credentials) {
-        let user = await prisma.user.findFirst({
-          where: {
-            email: credentials?.email
-          }
-        })
-        if (user) {
+        if (!credentials?.email || !credentials?.password) {
+          return null;
+        }
+
+        const user = await prisma.user.findFirst({
+          where: { email: credentials.email },
+        });
+
+        if (user && (await bcrypt.compare(credentials.password, user.senha))) {
           return { id: user.id.toString(), name: user.nome, email: user.email };
         }
-        return null
+        
+        console.log("Usuário não encontrado ou senha incorreta.");
+        return null;
       },
     }),
     GoogleProvider({
@@ -53,10 +59,12 @@ export const authOptions = {
         });
 
         if (!existingUser) {
+          const defaultPassword = await bcrypt.hash("default_password", 10); //gera uma senha aleatoria para o usuário do google
           existingUser = await prisma.user.create({
             data: {
               nome: user.name,
               email: user.email,
+              senha: defaultPassword, 
             },
           });
         }
