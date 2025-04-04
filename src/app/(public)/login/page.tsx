@@ -1,6 +1,7 @@
 "use client";
 
 import { signIn } from "next-auth/react";
+import Link from "next/link";
 
 export default function Login() {
   return (
@@ -16,7 +17,7 @@ export default function Login() {
               email: formData.get("email"),
               password: formData.get("password"),
               redirect: true,
-              callbackUrl: "/dashboard",
+              callbackUrl: "/profile",
             });
           }}
         >
@@ -43,12 +44,19 @@ export default function Login() {
         </form>
         <div className="flex items-center justify-center">
           <button
-            onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
+            onClick={() => signIn("google", { callbackUrl: "/profile" })}
             className="w-full flex items-center justify-center bg-red-500 hover:bg-red-600 text-white font-semibold py-2 rounded-lg transition"
           >
             Entrar com Google
           </button>
         </div>
+        <button
+            type="button"
+            onClick={() => window.location.href = '/register'}
+            className="w-full bg-gray-500 hover:bg-gray-600 text-white font-semibold py-2 rounded-lg transition"
+          >
+            Registrar-se
+          </button>
       </div>
     </div>
   );
