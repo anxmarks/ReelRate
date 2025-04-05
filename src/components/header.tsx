@@ -1,46 +1,48 @@
 "use client";
 
 import Link from "next/link";
-import { Menu } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { useSession, signOut } from "next-auth/react";
 import { useState } from "react";
 
 export default function Header() {
   const { data: session } = useSession();
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
 
   return (
-    <header className="w-full fixed top-0 left-0 bg-black/80 backdrop-blur-md text-white shadow-md">
+    <header className="w-full fixed top-0 left-0 bg-gradient-to-r from-zinc-900 to-zinc-800 text-white shadow-lg z-50">
       <div className="container mx-auto px-6 py-4 flex justify-between items-center">
-        <Link href="/" className="text-2xl font-bold">ReelRate</Link>
-        <nav className="hidden md:flex gap-6">
-          <Link href="/movies" className="hover:text-gray-300">Home</Link>
-          <Link href="/reviews" className="hover:text-gray-300">Avaliações</Link>
-        </nav>
-        <div className="flex items-center gap-4 relative">
+        {/* Logo */}
+        <Link href="/" className="text-3xl font-extrabold tracking-wide text-yellow-400 hover:text-yellow-300 transition">
+          ReelRate
+        </Link>
+
+        {/* Desktop Nav */}
+        <nav className="hidden md:flex items-center gap-8 text-sm font-medium">
+          <Link href="/" className="hover:text-yellow-300 transition">Home</Link>
+          <Link href="/reviews" className="hover:text-yellow-300 transition">Avaliações</Link>
+
           {session ? (
             <div className="relative">
-              <button
-                onClick={() => setMenuOpen(!menuOpen)}
-                className="hover:text-gray-300"
-              >
+              <button onClick={() => setDropdownOpen(!dropdownOpen)} className="hover:text-yellow-300">
                 {session.user?.name}
               </button>
-              {menuOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-white text-black rounded-lg shadow-lg">
+              {dropdownOpen && (
+                <div className="absolute right-0 mt-2 w-44 bg-white text-black rounded-xl shadow-xl overflow-hidden">
                   <Link
                     href="/profile"
                     className="block px-4 py-2 hover:bg-gray-100"
-                    onClick={() => setMenuOpen(false)}
+                    onClick={() => setDropdownOpen(false)}
                   >
                     Perfil
                   </Link>
                   <button
                     onClick={() => {
                       signOut();
-                      setMenuOpen(false);
+                      setDropdownOpen(false);
                     }}
-                    className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                    className="w-full text-left px-4 py-2 hover:bg-gray-100"
                   >
                     Sair
                   </button>
@@ -48,11 +50,43 @@ export default function Header() {
               )}
             </div>
           ) : (
-            <Link href="/login" className="hover:text-gray-300">Login</Link>
+            <Link href="/login" className="hover:text-yellow-300 transition">Login</Link>
           )}
-          <Menu className="md:hidden w-6 h-6 cursor-pointer" />
-        </div>
+        </nav>
+
+        {/* Mobile Menu Button */}
+        <button
+          className="md:hidden text-white"
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+        >
+          {mobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
+        </button>
       </div>
+
+      {/* Mobile Nav */}
+      {mobileMenuOpen && (
+        <div className="md:hidden bg-zinc-900 border-t border-zinc-700 px-6 py-4 space-y-4">
+          <Link href="/" className="block hover:text-yellow-300" onClick={() => setMobileMenuOpen(false)}>Home</Link>
+          <Link href="/reviews" className="block hover:text-yellow-300" onClick={() => setMobileMenuOpen(false)}>Avaliações</Link>
+
+          {session ? (
+            <>
+              <Link href="/profile" className="block hover:text-yellow-300" onClick={() => setMobileMenuOpen(false)}>Perfil</Link>
+              <button
+                onClick={() => {
+                  signOut();
+                  setMobileMenuOpen(false);
+                }}
+                className="block w-full text-left hover:text-yellow-300"
+              >
+                Sair
+              </button>
+            </>
+          ) : (
+            <Link href="/login" className="block hover:text-yellow-300" onClick={() => setMobileMenuOpen(false)}>Login</Link>
+          )}
+        </div>
+      )}
     </header>
   );
 }

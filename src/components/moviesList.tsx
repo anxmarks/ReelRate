@@ -13,11 +13,10 @@ export default function MoviesList() {
   const [query, setQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
 
-  // Debounce handler para atrasar a atualização da query real
   const debounceQuery = useCallback(
     debounce((value: string) => {
       setDebouncedQuery(value);
-      setPage(1); // Resetar para a primeira página ao buscar
+      setPage(1);
     }, 500),
     []
   );
@@ -31,37 +30,38 @@ export default function MoviesList() {
     : useMovies(page);
 
   return (
-    <div className="bg-zinc-950 min-h-screen text-white p-6">
+    <div className="bg-[#2d3250] min-h-screen text-white px-6 py-10">
       <SearchBar value={query} onChange={setQuery} />
 
-      {isLoading && <p className="text-center mt-10">Carregando filmes...</p>}
+      {isLoading && <p className="text-center mt-10 text-[#f9b17a]">Carregando filmes...</p>}
       {error && <p className="text-center text-red-500">Erro ao carregar filmes.</p>}
-
       {!isLoading && moviesData?.results?.length === 0 && (
-        <p className="text-center mt-10 text-gray-400">Nenhum filme encontrado.</p>
+        <p className="text-center mt-10 text-[#676f9d]">Nenhum filme encontrado.</p>
       )}
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-8 mt-8">
         {moviesData?.results.map((movie: any) => (
           <Link href={`/movie/${movie.id}`} key={movie.id}>
-            <div className="bg-zinc-900 p-3 rounded-xl shadow hover:scale-105 transition cursor-pointer">
+            <div className="bg-[#424769] p-3 rounded-2xl shadow-lg hover:scale-[1.03] hover:shadow-xl transition-all duration-200 cursor-pointer">
               <img
                 src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
                 alt={movie.title}
-                className="w-full h-72 object-cover rounded"
+                className="w-full h-72 object-cover rounded-xl"
               />
-              <h3 className="mt-2 font-semibold text-sm">{movie.title}</h3>
-              <p className="text-yellow-400 text-xs">Nota: {movie.vote_average}</p>
+              <h3 className="mt-3 font-semibold text-base truncate">{movie.title}</h3>
+              <p className="text-[#f9b17a] text-sm">⭐ {movie.vote_average}</p>
             </div>
           </Link>
         ))}
       </div>
 
-      <Pagination
-        currentPage={page}
-        totalPages={moviesData?.total_pages || 1}
-        onPageChange={setPage}
-      />
+      <div className="mt-10">
+        <Pagination
+          currentPage={page}
+          totalPages={moviesData?.total_pages || 1}
+          onPageChange={setPage}
+        />
+      </div>
     </div>
   );
 }

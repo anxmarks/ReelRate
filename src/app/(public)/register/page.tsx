@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Header from "@/components/header";
+import Footer from "@/components/Footer";
 
 export default function Register() {
   const [error, setError] = useState<string | null>(null);
@@ -30,40 +32,53 @@ export default function Register() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-100">
-      <div className="w-full max-w-md p-8 space-y-6 bg-white shadow-lg rounded-xl">
-        <h1 className="text-2xl font-bold text-center text-gray-900">Registrar</h1>
-        {error && <p className="text-red-500 text-center">{error}</p>}
-        <form className="space-y-4" onSubmit={handleSubmit}>
-          <input
-            name="name"
-            type="text"
-            placeholder="Nome"
-            required
-            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-500"
-          />
-          <input
-            name="email"
-            type="email"
-            placeholder="E-mail"
-            required
-            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-500"
-          />
-          <input
-            name="password"
-            type="password"
-            placeholder="Senha"
-            required
-            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-500"
-          />
-          <button
-            type="submit"
-            className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 rounded-lg transition"
-          >
-            Registrar
-          </button>
-        </form>
+    <>
+      <Header />
+      <div className="flex min-h-screen items-center justify-center bg-[#2d3250] px-4">
+        <div className="w-full max-w-md p-8 space-y-6 bg-[#424769] text-white shadow-xl rounded-2xl border border-[#676f9d]/30">
+          <h1 className="text-3xl font-bold text-center">Criar conta</h1>
+          {error && <p className="text-red-400 text-center">{error}</p>}
+          <form className="space-y-4" onSubmit={handleSubmit}>
+            <input
+              name="name"
+              type="text"
+              placeholder="Nome"
+              required
+              className="w-full px-4 py-3 rounded-lg bg-[#2d3250] text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-[#f9b17a] border border-[#676f9d]/40"
+            />
+            <input
+              name="email"
+              type="email"
+              placeholder="E-mail"
+              required
+              className="w-full px-4 py-3 rounded-lg bg-[#2d3250] text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-[#f9b17a] border border-[#676f9d]/40"
+            />
+            <input
+              name="password"
+              type="password"
+              placeholder="Senha"
+              required
+              className="w-full px-4 py-3 rounded-lg bg-[#2d3250] text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-[#f9b17a] border border-[#676f9d]/40"
+            />
+            <button
+              type="submit"
+              className="w-full bg-[#f9b17a] hover:bg-[#f8a95c] text-[#2d3250] font-bold py-3 rounded-lg transition"
+            >
+              Registrar
+            </button>
+          </form>
+          <p className="text-sm text-center text-gray-300">
+            Já possui uma conta?{" "}
+            <span
+              onClick={() => router.push("/login")}
+              className="text-[#f9b17a] cursor-pointer hover:underline"
+            >
+              Entrar
+            </span>
+          </p>
+        </div>
       </div>
-    </div>
+      <Footer />
+    </>
   );
 }

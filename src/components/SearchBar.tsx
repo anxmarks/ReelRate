@@ -1,19 +1,18 @@
 type SearchBarProps = {
-    value: string;
-    onChange: (query: string) => void;
-  };
-  
-  export default function SearchBar({ value, onChange }: SearchBarProps) {
-    return (
-      <div className="mb-6 mt-30 flex justify-center gap-4">
-        <input
-          type="text"
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          placeholder="Pesquisar filmes..."
-          className="w-full max-w-md px-4 py-2 rounded-lg bg-zinc-800 text-white placeholder-gray-400 focus:outline-none"
-        />
-      </div>
-    );
-  }
-  
+  value: string;
+  onChange: (query: string) => void;
+};
+
+export default function SearchBar({ value, onChange }: SearchBarProps) {
+  return (
+    <div className="mb-10 mt-20 flex justify-center">
+      <input
+        type="text"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder="🔍 Pesquisar filmes..."
+        className="w-full max-w-xl px-5 py-3 rounded-full bg-[#424769] text-white placeholder-[#cbd5e1] focus:outline-none focus:ring-2 focus:ring-[#f9b17a] transition-all duration-200 shadow-md"
+      />
+    </div>
+  );
+}
