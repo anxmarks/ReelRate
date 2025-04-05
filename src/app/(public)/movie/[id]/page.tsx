@@ -1,4 +1,7 @@
+import Footer from "@/components/Footer";
+import Header from "@/components/header";
 import axios from "axios";
+import { CalendarDays, Star } from "lucide-react";
 
 type MoviePageProps = {
   params: Promise<{
@@ -16,20 +19,36 @@ export default async function MoviePage(props: MoviePageProps) {
   const movie = res.data;
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-white p-6">
-      <div className="max-w-4xl mx-auto flex flex-col md:flex-row gap-6">
+    <>
+    <Header />
+    <div className="min-h-screen bg-[#2d3250] text-white px-6 py-10 mt-10">
+      <div className="max-w-5xl mx-auto bg-[#424769] rounded-2xl shadow-2xl p-6 flex flex-col md:flex-row gap-8">
         <img
           src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
           alt={movie.title}
-          className="w-full md:w-1/3 rounded-xl shadow"
+          className="w-full md:w-[300px] rounded-xl shadow-lg object-cover"
         />
-        <div className="flex-1">
-          <h1 className="text-3xl font-bold mb-2">{movie.title}</h1>
-          <p className="text-yellow-400 font-semibold mb-4">Nota: {movie.vote_average}</p>
-          <p className="text-gray-300">{movie.overview}</p>
-          <p className="text-sm text-gray-500 mt-4">Data de lançamento: {movie.release_date}</p>
+
+        <div className="flex-1 flex flex-col justify-between">
+          <div>
+            <h1 className="text-4xl font-bold mb-4">{movie.title}</h1>
+
+            <div className="flex items-center gap-2 text-[#f9b17a] font-semibold text-lg mb-4">
+              <Star className="w-5 h-5 fill-[#f9b17a]" />
+              {movie.vote_average}
+            </div>
+
+            <p className="text-gray-200 leading-relaxed">{movie.overview}</p>
+          </div>
+
+          <div className="flex items-center gap-2 mt-6 text-gray-400 text-sm">
+            <CalendarDays className="w-4 h-4" />
+            <span>Data de lançamento: {movie.release_date}</span>
+          </div>
         </div>
       </div>
     </div>
+    <Footer />
+    </>
   );
 }

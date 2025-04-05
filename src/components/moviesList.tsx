@@ -42,14 +42,16 @@ export default function MoviesList() {
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-8 mt-8">
         {moviesData?.results.map((movie: any) => (
           <Link href={`/movie/${movie.id}`} key={movie.id}>
-            <div className="bg-[#424769] p-3 rounded-2xl shadow-lg hover:scale-[1.03] hover:shadow-xl transition-all duration-200 cursor-pointer">
+            <div className="bg-[#424769] p-4 rounded-2xl shadow-xl hover:scale-[1.03] hover:shadow-2xl transition-all duration-200 cursor-pointer flex flex-col h-full">
               <img
                 src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
                 alt={movie.title}
-                className="w-full h-72 object-cover rounded-xl"
+                className="w-full h-96 object-cover rounded-xl"
               />
-              <h3 className="mt-3 font-semibold text-base truncate">{movie.title}</h3>
-              <p className="text-[#f9b17a] text-sm">⭐ {movie.vote_average}</p>
+              <div className="mt-4 flex flex-col justify-between flex-grow">
+                <h3 className="font-semibold text-base text-white line-clamp-2">{movie.title}</h3>
+                <p className="text-[#f9b17a] text-sm mt-1">⭐ {movie.vote_average}</p>
+              </div>
             </div>
           </Link>
         ))}
