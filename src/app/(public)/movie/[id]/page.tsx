@@ -1,13 +1,13 @@
 import axios from "axios";
 
 type MoviePageProps = {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 };
 
-export default async function MoviePage(props: Promise<MoviePageProps>) {
-  const { params } = await props;
+export default async function MoviePage(props: MoviePageProps) {
+  const params = await props.params;
   const { id } = params;
 
   const res = await axios.get(
