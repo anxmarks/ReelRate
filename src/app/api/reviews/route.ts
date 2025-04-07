@@ -40,24 +40,48 @@ export async function POST(req: Request) {
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
-  const movieTmdbId = parseInt(searchParams.get("movieTmdbId") || "");
 
-  if (!movieTmdbId) {
-    return NextResponse.json({ error: "ID do filme inválido." }, { status: 400 });
-  }
+  const movieTmdbIdParam = searchParams.get("movieTmdbId");
+  const userEmail = searchParams.get("userEmail");
 
-  const reviews = await prisma.review.findMany({
-    where: { movieTmdbId },
-    include: {
-      user: {
-        select: {
-          nome: true,
-          email: true,
+  if (movieTmdbIdParam) {
+    const movieTmdbId = parseInt(movieTmdbIdParam);
+
+    if (isNaN(movieTmdbId)) {
+      return NextResponse.json({ error: "ID do filme inválido." }, { status: 400 });
+    }
+
+    const reviews = await prisma.review.findMany({
+      where: { movieTmdbId },
+      include: {
+        user: {
+          select: {
+            nome: true,
+            email: true,
+          },
         },
       },
-    },
-    orderBy: { createdAt: "desc" },
-  });
+      orderBy: { createdAt: "desc" },
+    });
 
-  return NextResponse.json(reviews);
+    return NextResponse.json(reviews);
+  }
+
+  if (userEmail) {
+    const user = await prisma.user.findUnique({
+      where: { email: userEmail },
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: "Usuário não encontrado." }, { status: 404 });
+    }
+
+    const reviews = await prisma.review.findMany({
+      where: { userId: user.id },
+    });
+
+    return NextResponse.json(reviews);
+  }
+
+  return NextResponse.json({ error: "Parâmetros inválidos." }, { status: 400 });
 }
