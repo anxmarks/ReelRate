@@ -1,62 +1,76 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Review } from "@prisma/client";
+import axios from "axios";
 import ReviewForm from "./ReviewForm";
-import { useSession } from "next-auth/react";
+import { Star } from "lucide-react";
 
-type User = {
-  id: number;
-  email: string;
-  nome: string | null;
+type MovieReviewsProps = {
+  movieTmdbId: number;
+  onReviewSubmitted?: () => void; // <- prop opcional para notificar MoviePage
 };
 
-type FullReview = Review & {
-  user: User;
+type Review = {
+  id: string;
+  comment: string;
+  rating: number;
+  user: {
+    nome: string;
+    email: string;
+  };
 };
 
-export default function MovieReviews({ movieTmdbId }: { movieTmdbId: number }) {
-  const [reviews, setReviews] = useState<FullReview[]>([]);
-  const { data: session } = useSession();
+export default function MovieReviews({ movieTmdbId, onReviewSubmitted }: MovieReviewsProps) {
+  const [reviews, setReviews] = useState<Review[]>([]);
+  const [average, setAverage] = useState<number | null>(null);
 
   const fetchReviews = async () => {
-    const res = await fetch(`/api/reviews?movieTmdbId=${movieTmdbId}`);
-    const data = await res.json();
-    setReviews(data);
+    const res = await axios.get(`/api/reviews?movieTmdbId=${movieTmdbId}`);
+    setReviews(res.data);
+  };
+
+  const fetchAverage = async () => {
+    const res = await axios.get(`/api/ratings?movieTmdbId=${movieTmdbId}`);
+    setAverage(res.data.average);
+  };
+
+  const handleReviewSubmitted = async () => {
+    await fetchReviews();
+    await fetchAverage();
+
+    if (onReviewSubmitted) {
+      onReviewSubmitted(); // Notifica a página para atualizar a nota
+    }
   };
 
   useEffect(() => {
     fetchReviews();
+    fetchAverage();
   }, []);
 
   return (
-    <div className="max-w-3xl mx-auto mt-12">
-      <h2 className="text-2xl font-semibold mb-6 text-[#f9b17a]">Avaliações dos usuários</h2>
+    <div className="max-w-5xl mx-auto mt-10">
+      <div className="mb-6">
+        <h2 className="text-2xl font-bold text-white mb-2">Nota dos usuários</h2>
+        <div className="flex items-center gap-2 text-[#f9b17a] text-xl">
+          <Star className="w-5 h-5 fill-[#f9b17a]" />
+          {average !== null ? average : "Sem avaliações"}
+        </div>
+      </div>
 
-      {session && (
-        <ReviewForm
-          movieTmdbId={movieTmdbId}
-          onReviewSubmitted={fetchReviews}
-        />
-      )}
+      <ReviewForm movieTmdbId={movieTmdbId} onReviewSubmitted={handleReviewSubmitted} />
 
-      <div className="space-y-6 mt-6">
-        {reviews.length > 0 ? (
-          reviews.map((review) => (
-            <div
-              key={review.id}
-              className="bg-[#424769] rounded-xl p-4 border border-zinc-700 shadow"
-            >
-              <div className="flex justify-between items-center mb-2">
-                <h3 className="text-lg font-semibold">{review.user.nome || review.user.email}</h3>
-                <span className="text-[#f9b17a] font-medium">Nota: {review.rating}</span>
-              </div>
-              <p className="text-gray-200">{review.comment}</p>
+      <div className="mt-10 space-y-4">
+        {reviews.map((review) => (
+          <div key={review.id} className="bg-[#424769] p-4 rounded-lg shadow-md">
+            <div className="flex items-center gap-2 text-[#f9b17a] mb-2">
+              <Star className="w-4 h-4 fill-[#f9b17a]" />
+              <span>{review.rating}</span>
+              <span className="text-sm text-gray-300">por {review.user.nome}</span>
             </div>
-          ))
-        ) : (
-          <p className="text-gray-400">Nenhuma avaliação ainda.</p>
-        )}
+            <p className="text-white">{review.comment}</p>
+          </div>
+        ))}
       </div>
     </div>
   );
