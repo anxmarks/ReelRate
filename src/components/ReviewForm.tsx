@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import axios from "axios";
 import { Star } from "lucide-react";
@@ -15,10 +15,33 @@ export default function ReviewForm({ movieTmdbId, onReviewSubmitted }: ReviewFor
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
   const [loading, setLoading] = useState(false);
+  const [hasReview, setHasReview] = useState(false);
+  const [isChecking, setIsChecking] = useState(true);
+
+  // Verificar se o usuário já tem uma review para este filme
+  useEffect(() => {
+    const checkUserReview = async () => {
+      if (!session?.user?.email) {
+        setIsChecking(false);
+        return;
+      }
+
+      try {
+        const response = await axios.get(`/api/reviews/check?movieTmdbId=${movieTmdbId}`);
+        setHasReview(response.data.hasReview);
+      } catch (error) {
+        console.error("Erro ao verificar review:", error);
+      } finally {
+        setIsChecking(false);
+      }
+    };
+
+    checkUserReview();
+  }, [movieTmdbId, session?.user?.email]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!session?.user?.email) return;
+    if (!session?.user?.email || hasReview) return;
 
     try {
       setLoading(true);
@@ -29,11 +52,25 @@ export default function ReviewForm({ movieTmdbId, onReviewSubmitted }: ReviewFor
       });
       setRating(0);
       setComment("");
+      setHasReview(true);
       onReviewSubmitted();
     } finally {
       setLoading(false);
     }
   };
+
+  if (isChecking) {
+    return <div className="mt-6 text-gray-400">Carregando...</div>;
+  }
+
+  if (hasReview) {
+    return (
+      <div className="mt-6 bg-[#424769] p-6 rounded-xl shadow-md">
+        <h3 className="text-xl font-bold text-white mb-2">Você já avaliou este filme</h3>
+        <p className="text-gray-300">Cada usuário pode enviar apenas uma avaliação por filme.</p>
+      </div>
+    );
+  }
 
   return (
     <form onSubmit={handleSubmit} className="mt-6 bg-[#424769] p-6 rounded-xl shadow-md space-y-4">

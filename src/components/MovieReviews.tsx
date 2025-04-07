@@ -5,6 +5,7 @@ import axios from "axios";
 import ReviewForm from "./ReviewForm";
 import { Star } from "lucide-react";
 import clsx from "clsx";
+import { useSession } from "next-auth/react";
 
 type MovieReviewsProps = {
   movieTmdbId: number;
@@ -25,6 +26,7 @@ export default function MovieReviews({ movieTmdbId, onReviewSubmitted }: MovieRe
   const [reviews, setReviews] = useState<Review[]>([]);
   const [average, setAverage] = useState<number | null>(null);
   const [expandedReviewIds, setExpandedReviewIds] = useState<Set<string>>(new Set());
+  const { data: session, status } = useSession();
 
   const fetchReviews = async () => {
     const res = await axios.get(`/api/reviews?movieTmdbId=${movieTmdbId}`);
@@ -69,7 +71,9 @@ export default function MovieReviews({ movieTmdbId, onReviewSubmitted }: MovieRe
         </div>
       </div>
 
-      <ReviewForm movieTmdbId={movieTmdbId} onReviewSubmitted={handleReviewSubmitted} />
+      {status === "authenticated" && (
+        <ReviewForm movieTmdbId={movieTmdbId} onReviewSubmitted={handleReviewSubmitted} />
+      )}
 
       <div className="mt-10 space-y-4">
         {reviews.map((review) => {
