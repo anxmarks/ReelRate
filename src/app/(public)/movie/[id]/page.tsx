@@ -17,6 +17,18 @@ type MoviePageProps = {
 export default function MoviePage(props: MoviePageProps) {
   const [movie, setMovie] = useState<any>(null);
   const [shouldUpdate, setShouldUpdate] = useState(false);
+  const [isWatchLater, setIsWatchLater] = useState(false);
+
+  const handleWatchLater = async () => {
+    try {
+      const res = await axios.post("/api/watch-later", { movieTmdbId: movie.id });
+      if (res.status === 200) {
+        setIsWatchLater((prev) => !prev);
+      }
+    } catch (error) {
+      console.error("Erro ao atualizar lista:", error);
+    }
+  };
 
   useEffect(() => {
     const loadMovie = async () => {
@@ -26,11 +38,28 @@ export default function MoviePage(props: MoviePageProps) {
       const res = await axios.get(
         `https://api.themoviedb.org/3/movie/${id}?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&language=pt-BR`
       );
-      setMovie({ ...res.data, id: parseInt(id) });
+      setMovie(res.data);
     };
 
     loadMovie();
   }, [props.params]);
+
+  useEffect(() => {
+    const checkWatchLater = async () => {
+      if (!movie?.id) return;
+
+      try {
+        const res = await axios.post("/api/watch-later/check", {
+          movieTmdbId: movie.id,
+        });
+        setIsWatchLater(res.data.exists);
+      } catch (error) {
+        console.error("Erro ao verificar estado do botão:", error);
+      }
+    };
+
+    checkWatchLater();
+  }, [movie?.id]);
 
   if (!movie) return null;
 
@@ -49,15 +78,23 @@ export default function MoviePage(props: MoviePageProps) {
             <div>
               <h1 className="text-4xl font-bold mb-4">{movie.title}</h1>
 
-              {/* Nota do site */}
               <MovieRating movieTmdbId={movie.id} shouldUpdate={shouldUpdate} />
 
               <p className="text-gray-200 leading-relaxed">{movie.overview}</p>
             </div>
 
-            <div className="flex items-center gap-2 mt-6 text-gray-400 text-sm">
-              <CalendarDays className="w-4 h-4" />
-              <span>Data de lançamento: {movie.release_date}</span>
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mt-6 text-gray-400 text-sm">
+              <div className="flex items-center gap-2">
+                <CalendarDays className="w-4 h-4" />
+                <span>Data de lançamento: {movie.release_date}</span>
+              </div>
+
+              <button
+                onClick={handleWatchLater}
+                className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded"
+              >
+                {isWatchLater ? "Remover da lista" : "Assistir mais tarde"}
+              </button>
             </div>
           </div>
         </div>

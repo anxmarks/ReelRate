@@ -7,6 +7,7 @@ import Header from "@/components/header";
 import Footer from "@/components/Footer";
 import axios from "axios";
 import { Pencil } from "lucide-react";
+import WatchLaterCard from "@/components/WatchLaterCard";
 
 type Review = {
   id: string;
@@ -25,6 +26,7 @@ export default function Profile() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const [userReviews, setUserReviews] = useState<(Review & { movie: Movie | null })[]>([]);
+  const [watchLaterMovies, setWatchLaterMovies] = useState<Movie[]>([]);
   const [selectedAvatar, setSelectedAvatar] = useState<string>("");
   const [showModal, setShowModal] = useState(false);
 
@@ -45,7 +47,6 @@ export default function Profile() {
     router.refresh();
   };
 
-  // Novo useEffect para buscar avatar do usuário
   useEffect(() => {
     const fetchUserAvatar = async () => {
       if (!session?.user?.email) return;
@@ -93,7 +94,17 @@ export default function Profile() {
       setUserReviews(reviewsWithMovies);
     };
 
+    const fetchWatchLater = async () => {
+      try {
+        const res = await axios.get("/api/watch-later/list");
+        setWatchLaterMovies(res.data);
+      } catch (err) {
+        console.error("Erro ao buscar filmes para assistir mais tarde:", err);
+      }
+    };
+
     fetchReviews();
+    fetchWatchLater();
   }, [session, status, router]);
 
   useEffect(() => {
@@ -145,12 +156,13 @@ export default function Profile() {
                 Avaliados
               </div>
               <div>
-                <span className="block text-2xl font-bold text-white">5</span>
-                Favoritos
+                <span className="block text-2xl font-bold text-white">{watchLaterMovies.length}</span>
+                Para assistir
               </div>
             </div>
           </div>
 
+          {/* Filmes Avaliados */}
           <div>
             <h2 className="text-2xl font-bold mb-4 text-[#f9b17a]">Filmes Avaliados</h2>
             {userReviews.length === 0 ? (
@@ -175,6 +187,20 @@ export default function Profile() {
                       <p className="text-gray-300 mt-2 text-sm">{review.comment}</p>
                     </div>
                   </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Assistir Mais Tarde */}
+          <div>
+            <h2 className="text-2xl font-bold mb-4 text-[#f9b17a]">Assistir mais tarde</h2>
+            {watchLaterMovies.length === 0 ? (
+              <p className="text-gray-400">Nenhum filme salvo para assistir depois.</p>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                {watchLaterMovies.map((movie) => (
+                  <WatchLaterCard key={movie.id} movieId={movie.id} />
                 ))}
               </div>
             )}

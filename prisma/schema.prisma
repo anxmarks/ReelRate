@@ -16,6 +16,7 @@ model User {
   avatar    String? 
   criado_em DateTime   @default(now())
   reviews   Review[]   @relation("UserReviews")
+  watchLater WatchLater[] @relation("UserWatchLater")
 
   @@map("users")
 }
@@ -28,4 +29,14 @@ model Review {
   user      User     @relation("UserReviews", fields: [userId], references: [id])
   userId    Int
   movieTmdbId Int   
+}
+
+model WatchLater {
+  id         Int      @id @default(autoincrement())
+  user       User     @relation("UserWatchLater", fields: [userId], references: [id])
+  userId     Int
+  movieTmdbId Int
+  createdAt  DateTime @default(now())
+
+  @@unique([userId, movieTmdbId]) 
 }

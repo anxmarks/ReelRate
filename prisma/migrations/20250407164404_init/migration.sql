@@ -4,6 +4,7 @@ CREATE TABLE "users" (
     "email" TEXT NOT NULL,
     "nome" TEXT,
     "senha" TEXT NOT NULL,
+    "avatar" TEXT,
     "criado_em" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -18,5 +19,17 @@ CREATE TABLE "Review" (
     CONSTRAINT "Review_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
+-- CreateTable
+CREATE TABLE "WatchLater" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "userId" INTEGER NOT NULL,
+    "movieTmdbId" INTEGER NOT NULL,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT "WatchLater_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "WatchLater_userId_movieTmdbId_key" ON "WatchLater"("userId", "movieTmdbId");
