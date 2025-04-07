@@ -7,6 +7,7 @@ import { CalendarDays } from "lucide-react";
 import MovieReviews from "@/components/MovieReviews";
 import MovieRating from "@/components/MovieRating";
 import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
 
 type MoviePageProps = {
   params: Promise<{
@@ -18,6 +19,7 @@ export default function MoviePage(props: MoviePageProps) {
   const [movie, setMovie] = useState<any>(null);
   const [shouldUpdate, setShouldUpdate] = useState(false);
   const [isWatchLater, setIsWatchLater] = useState(false);
+  const { data: session, status } = useSession();
 
   const handleWatchLater = async () => {
     try {
@@ -46,7 +48,7 @@ export default function MoviePage(props: MoviePageProps) {
 
   useEffect(() => {
     const checkWatchLater = async () => {
-      if (!movie?.id) return;
+      if (!movie?.id || status !== "authenticated") return;
 
       try {
         const res = await axios.post("/api/watch-later/check", {
@@ -59,7 +61,7 @@ export default function MoviePage(props: MoviePageProps) {
     };
 
     checkWatchLater();
-  }, [movie?.id]);
+  }, [movie?.id, status]);
 
   if (!movie) return null;
 
@@ -89,12 +91,14 @@ export default function MoviePage(props: MoviePageProps) {
                 <span>Data de lançamento: {movie.release_date}</span>
               </div>
 
-              <button
-                onClick={handleWatchLater}
-                className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded"
-              >
-                {isWatchLater ? "Remover da lista" : "Assistir mais tarde"}
-              </button>
+              {status === "authenticated" && (
+                <button
+                  onClick={handleWatchLater}
+                  className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded"
+                >
+                  {isWatchLater ? "Remover da lista" : "Assistir mais tarde"}
+                </button>
+              )}
             </div>
           </div>
         </div>
