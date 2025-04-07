@@ -12,7 +12,8 @@ model User {
   id        Int        @id @default(autoincrement())
   email     String     @unique
   nome      String?
-  senha     String    
+  senha     String
+  avatar    String? 
   criado_em DateTime   @default(now())
   reviews   Review[]   @relation("UserReviews")
 
