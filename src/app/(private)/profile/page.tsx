@@ -29,6 +29,8 @@ export default function Profile() {
   const [watchLaterMovies, setWatchLaterMovies] = useState<Movie[]>([]);
   const [selectedAvatar, setSelectedAvatar] = useState<string>("");
   const [showModal, setShowModal] = useState(false);
+  const [showReviewed, setShowReviewed] = useState(true);
+  const [showWatchLater, setShowWatchLater] = useState(true);
 
   const avatarOptions = [
     "/avatars/avatar1.png",
@@ -164,45 +166,59 @@ export default function Profile() {
 
           {/* Filmes Avaliados */}
           <div>
-            <h2 className="text-2xl font-bold mb-4 text-[#f9b17a]">Filmes Avaliados</h2>
-            {userReviews.length === 0 ? (
-              <p className="text-gray-400">Você ainda não avaliou nenhum filme.</p>
-            ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                {userReviews.map((review) => (
-                  <div
-                    key={review.id}
-                    className="bg-[#424769] rounded-xl overflow-hidden shadow-lg border border-[#676f9d]/20 hover:scale-105 transition"
-                  >
-                    {review.movie?.poster_path && (
-                      <img
-                        src={`https://image.tmdb.org/t/p/w500${review.movie.poster_path}`}
-                        alt={review.movie.title}
-                        className="w-full h-60 object-cover"
-                      />
-                    )}
-                    <div className="p-4">
-                      <h3 className="text-lg font-bold">{review.movie?.title}</h3>
-                      <p className="text-[#f9b17a]">Nota: {review.rating} ⭐</p>
-                      <p className="text-gray-300 mt-2 text-sm">{review.comment}</p>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-2xl font-bold text-[#f9b17a]">Filmes Avaliados</h2>
+              <button onClick={() => setShowReviewed(!showReviewed)} className="text-[#f9b17a] transition-transform">
+                <span className={`inline-block transform ${showReviewed ? "rotate-90" : "-rotate-90"}`}>▶</span>
+              </button>
+            </div>
+            {showReviewed && (
+              userReviews.length === 0 ? (
+                <p className="text-gray-400">Você ainda não avaliou nenhum filme.</p>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                  {userReviews.map((review) => (
+                    <div
+                      key={review.id}
+                      className="bg-[#424769] rounded-xl overflow-hidden shadow-lg border border-[#676f9d]/20 hover:scale-105 transition"
+                    >
+                      {review.movie?.poster_path && (
+                        <img
+                          src={`https://image.tmdb.org/t/p/w500${review.movie.poster_path}`}
+                          alt={review.movie.title}
+                          className="w-full h-60 object-cover"
+                        />
+                      )}
+                      <div className="p-4">
+                        <h3 className="text-lg font-bold">{review.movie?.title}</h3>
+                        <p className="text-[#f9b17a]">Nota: {review.rating} ⭐</p>
+                        <p className="text-gray-300 mt-2 text-sm">{review.comment}</p>
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )
             )}
           </div>
 
           {/* Assistir Mais Tarde */}
           <div>
-            <h2 className="text-2xl font-bold mb-4 text-[#f9b17a]">Assistir mais tarde</h2>
-            {watchLaterMovies.length === 0 ? (
-              <p className="text-gray-400">Nenhum filme salvo para assistir depois.</p>
-            ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                {watchLaterMovies.map((movie) => (
-                  <WatchLaterCard key={movie.id} movieId={movie.id} />
-                ))}
-              </div>
+            <div className="flex items-center justify-between mb-4 mt-10">
+              <h2 className="text-2xl font-bold text-[#f9b17a]">Assistir mais tarde</h2>
+              <button onClick={() => setShowWatchLater(!showWatchLater)} className="text-[#f9b17a] transition-transform">
+                <span className={`inline-block transform ${showWatchLater ? "rotate-90" : "-rotate-90"}`}>▶</span>
+              </button>
+            </div>
+            {showWatchLater && (
+              watchLaterMovies.length === 0 ? (
+                <p className="text-gray-400">Nenhum filme salvo para assistir depois.</p>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                  {watchLaterMovies.map((movie) => (
+                    <WatchLaterCard key={movie.id} movieId={movie.id} />
+                  ))}
+                </div>
+              )
             )}
           </div>
         </div>
