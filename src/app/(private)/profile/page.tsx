@@ -186,7 +186,7 @@ export default function Profile() {
                         <img
                           src={`https://image.tmdb.org/t/p/w500${review.movie.poster_path}`}
                           alt={review.movie.title}
-                          className="w-full h-60 object-cover"
+                          className="w-full h-100 object-cover"
                         />
                       )}
                       <div className="p-4">

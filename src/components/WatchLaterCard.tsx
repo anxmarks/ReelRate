@@ -23,7 +23,7 @@ export default function WatchLaterCard({ movieId }: { movieId: number }) {
       <img
         src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
         alt={movie.title}
-        className="w-full h-60 object-cover"
+        className="w-full h-100 object-cover"
       />
       <div className="p-4">
         <h3 className="text-lg font-bold">{movie.title}</h3>
