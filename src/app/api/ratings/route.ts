@@ -14,11 +14,11 @@ export async function GET(req: Request) {
   const reviews = await prisma.review.findMany({
     where: { movieTmdbId },
     select: { rating: true },
-  });
+  }) as { rating: number }[];
 
   if (reviews.length === 0) return NextResponse.json({ average: null });
 
-  const total = reviews.reduce((acc, r) => acc + r.rating, 0);
+  const total = reviews.reduce((acc: number, r) => acc + r.rating, 0);
   const average = total / reviews.length;
 
   return NextResponse.json({ average: Number(average.toFixed(1)) });
