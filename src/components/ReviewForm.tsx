@@ -94,12 +94,11 @@ export default function ReviewForm({ movieTmdbId, onReviewSubmitted }: ReviewFor
         onChange={(e) => setComment(e.target.value)}
         rows={4}
         className="w-full p-3 rounded-lg bg-[#2d3250] text-white border border-zinc-700 focus:outline-none focus:ring-2 focus:ring-[#f9b17a] resize-none"
-        required
       />
 
       <button
         type="submit"
-        disabled={loading || rating === 0 || comment.trim() === ""}
+        disabled={loading || rating === 0}
         className="bg-[#f9b17a] text-[#2d3250] font-semibold px-5 py-2 rounded-xl hover:bg-[#f6a25e] transition disabled:opacity-50"
       >
         {loading ? "Enviando..." : "Enviar avaliação"}
