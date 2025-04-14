@@ -144,7 +144,7 @@ export default function Profile() {
               />
               <button
                 onClick={() => setShowModal(true)}
-                className="absolute bottom-2 right-2 bg-[#f9b17a] text-black p-1 rounded-full hover:bg-orange-400"
+                className="absolute bottom-2 right-2 bg-[#f9b17a] text-black p-1 rounded-full hover:bg-orange-400 cursor-pointer"
                 title="Editar avatar"
               >
                 <Pencil size={18} />
@@ -244,13 +244,13 @@ export default function Profile() {
             <div className="flex justify-end gap-2 mt-6">
               <button
                 onClick={() => setShowModal(false)}
-                className="px-4 py-2 rounded-md bg-gray-500 text-white hover:bg-gray-600"
+                className="px-4 py-2 rounded-md bg-gray-500 text-white hover:bg-gray-600 cursor-pointer"
               >
                 Fechar
               </button>
               <button
                 onClick={handleAvatarChange}
-                className="px-4 py-2 rounded-md bg-blue-500 text-white hover:bg-blue-600"
+                className="px-4 py-2 rounded-md bg-blue-500 text-white hover:bg-blue-600 cursor-pointer"
               >
                 Salvar
               </button>

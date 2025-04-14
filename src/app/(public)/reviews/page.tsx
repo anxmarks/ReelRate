@@ -94,76 +94,110 @@ export default function AllReviewsPage() {
         setExpandedComments((prev) => ({ ...prev, [id]: !prev[id] }));
     };
 
+    const formatDate = (dateString: string) => {
+        const options: Intl.DateTimeFormatOptions = {
+            day: '2-digit',
+            month: 'long',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        };
+        return new Date(dateString).toLocaleDateString('pt-BR', options);
+    };
+
     return (
         <>
             <Header />
-            <div className="min-h-screen mx-auto px-4 pt-30 pb-20 bg-[#2d3250]">
-                <h1 className="text-3xl font-bold text-white mb-8">Todas as Avaliações</h1>
+            <div className="min-h-screen bg-[#2d3250] py-12 px-4 pt-30 sm:px-6 lg:px-8">
+                <div className="max-w-4xl mx-auto">
+                    <div className="text-center mb-12">
+                        <h1 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-500 mb-4">
+                            Avaliações da Comunidade
+                        </h1>
+                        <p className="text-lg text-gray-300">
+                            Veja o que outros cinéfilos estão dizendo sobre seus filmes favoritos
+                        </p>
+                    </div>
 
-                <div className="space-y-6">
-                    {reviews.map((review) => {
-                        const isExpanded = expandedComments[review.id];
-                        const commentTooLong = review.comment.length > 300;
-                        const displayText = isExpanded ? review.comment : `${review.comment.substring(0, 300)}${review.comment.length > 300 ? "..." : ""}`;
-                        const userAvatar = avatars[review.user.email];
+                    <div className="space-y-6">
+                        {reviews.map((review) => {
+                            const isExpanded = expandedComments[review.id];
+                            const commentTooLong = review.comment.length > 300;
+                            const displayText = isExpanded ? review.comment : `${review.comment.substring(0, 300)}${review.comment.length > 300 ? "..." : ""}`;
+                            const userAvatar = avatars[review.user.email];
 
-                        return (
-                            <div
-                                key={review.id}
-                                className="bg-[#424769] p-4 rounded-xl shadow-md flex gap-4 items-start"
-                            >
-                                {loadingAvatars ? (
-                                    <div className="w-12 h-12 rounded-full bg-gray-600 animate-pulse" />
-                                ) : userAvatar ? (
-                                    <Image
-                                        src={userAvatar}
-                                        alt="Avatar"
-                                        width={48}
-                                        height={48}
-                                        className="w-12 h-12 rounded-full object-cover"
-                                        onError={(e) => {
-                                            // Fallback para inicial se a imagem falhar ao carregar
-                                            const target = e.target as HTMLImageElement;
-                                            target.onerror = null;
-                                            target.src = `https://ui-avatars.com/api/?name=${review.user.nome[0]}&background=random`;
-                                        }}
-                                    />
-                                ) : (
-                                    <div className="w-12 h-12 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold text-xl uppercase">
-                                        {review.user.nome[0]}
-                                    </div>
-                                )}
-
-                                <div className="flex-1 min-w-0">
-                                    <div className="flex justify-between items-center">
-                                        <div className="truncate">
-                                            <h2 className="text-white font-semibold truncate">{review.user.nome}</h2>
-                                            <p className="text-sm text-gray-300 truncate">
-                                                {movies[review.movieTmdbId] || "Carregando..."}
-                                            </p>
+                            return (
+                                <div
+                                    key={review.id}
+                                    className="bg-gray-800/50 backdrop-blur-sm p-6 rounded-2xl shadow-lg border border-gray-700 hover:border-amber-500/30 transition-all duration-300"
+                                >
+                                    <div className="flex gap-4">
+                                        <div className="flex-shrink-0">
+                                            {loadingAvatars ? (
+                                                <div className="w-14 h-14 rounded-full bg-gray-700 animate-pulse" />
+                                            ) : userAvatar ? (
+                                                <Image
+                                                    src={userAvatar}
+                                                    alt="Avatar"
+                                                    width={56}
+                                                    height={56}
+                                                    className="w-14 h-14 rounded-full object-cover border-2 border-amber-500/50"
+                                                    onError={(e) => {
+                                                        const target = e.target as HTMLImageElement;
+                                                        target.onerror = null;
+                                                        target.src = `https://ui-avatars.com/api/?name=${review.user.nome[0]}&background=random`;
+                                                    }}
+                                                />
+                                            ) : (
+                                                <div className="w-14 h-14 rounded-full bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center text-white font-bold text-2xl uppercase">
+                                                    {review.user.nome[0]}
+                                                </div>
+                                            )}
                                         </div>
 
-                                        <div className="flex items-center text-[#f9b17a] gap-1 text-sm flex-shrink-0">
-                                            <Star className="w-4 h-4 fill-[#f9b17a]" />
-                                            {review.rating}
-                                        </div>
-                                    </div>
+                                        <div className="flex-1 min-w-0">
+                                            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2">
+                                                <div>
+                                                    <h2 className="text-xl font-bold text-white">{review.user.nome}</h2>
+                                                    <p className="text-sm text-amber-400 font-medium">
+                                                        {movies[review.movieTmdbId] || "Carregando..."}
+                                                    </p>
+                                                </div>
 
-                                    <div className="text-white mt-2 whitespace-pre-wrap break-words">
-                                        {displayText}
-                                        {commentTooLong && (
-                                            <button
-                                                onClick={() => toggleComment(review.id)}
-                                                className="text-sm text-[#f9b17a] ml-1 hover:underline focus:outline-none"
-                                            >
-                                                {isExpanded ? " ver menos" : " ver mais"}
-                                            </button>
-                                        )}
+                                                <div className="flex items-center gap-2">
+                                                    <div className="flex items-center bg-gray-700 px-3 py-1 rounded-full">
+                                                        <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
+                                                        <span className="ml-1 text-white font-semibold">
+                                                            {review.rating.toFixed(1)}
+                                                        </span>
+                                                    </div>
+                                                    <span className="text-xs text-gray-400">
+                                                        {formatDate(review.createdAt)}
+                                                    </span>
+                                                </div>
+                                            </div>
+
+                                            <div className="mt-4">
+                                                <div className="prose prose-invert max-w-none text-gray-300">
+                                                    <p className="whitespace-pre-wrap break-words">
+                                                        {displayText}
+                                                    </p>
+                                                    {commentTooLong && (
+                                                        <button
+                                                            onClick={() => toggleComment(review.id)}
+                                                            className="text-amber-400 hover:text-amber-300 font-medium text-sm mt-1 focus:outline-none transition-colors"
+                                                        >
+                                                            {isExpanded ? "Mostrar menos" : "Mostrar mais"}
+                                                        </button>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        );
-                    })}
+                            );
+                        })}
+                    </div>
                 </div>
             </div>
             <Footer />

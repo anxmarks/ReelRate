@@ -94,7 +94,7 @@ export default function MoviePage(props: MoviePageProps) {
               {status === "authenticated" && (
                 <button
                   onClick={handleWatchLater}
-                  className={`${isWatchLater ? "bg-red-500 hover:bg-red-600" : "bg-orange-500 hover:bg-orange-600"
+                  className={`${isWatchLater ? "bg-red-500 hover:bg-red-600 cursor-pointer" : "bg-orange-500 hover:bg-orange-600 cursor-pointer"
                     } text-white px-4 py-2 rounded`}
                 >
                   {isWatchLater ? "Remover da lista" : "Assistir mais tarde"}

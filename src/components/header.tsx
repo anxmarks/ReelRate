@@ -13,7 +13,7 @@ export default function Header() {
   return (
     <header className="w-full fixed top-0 left-0 bg-[#2d3250] shadow-md z-50">
       <div className="container mx-auto px-6 py-4 flex justify-between items-center">
-        {/* Logo */}
+ 
         <Link
           href="/"
           className="text-3xl font-extrabold tracking-wide text-[#f9b17a] hover:text-[#f9c78b] transition duration-200"
@@ -21,22 +21,21 @@ export default function Header() {
           ReelRate
         </Link>
 
-        {/* Desktop Nav */}
         <nav className="hidden md:flex items-center gap-10 text-sm font-medium text-white">
           <Link href="/" className="hover:text-[#f9b17a] transition">Home</Link>
           <Link href="/reviews" className="hover:text-[#f9b17a] transition">Avaliações</Link>
 
           {session ? (
-            <div className="relative">
+            <div className="relative ">
               <button
                 onClick={() => setDropdownOpen(!dropdownOpen)}
-                className="flex items-center gap-2 hover:text-[#f9b17a] transition"
+                className="flex items-center gap-2 hover:text-[#f9b17a] transition cursor-pointer"
               >
-                <UserCircle className="w-5 h-5" />
+                <UserCircle className="w-5 h-5 cursor-pointer" />
                 {session.user?.name}
               </button>
               {dropdownOpen && (
-                <div className="absolute right-0 mt-2 w-44 bg-[#424769] text-white rounded-xl shadow-lg overflow-hidden border border-[#676f9d]">
+                <div className="absolute right-0 mt-2 w-44 bg-[#424769] text-white rounded-xl shadow-lg overflow-hidden border border-[#676f9d] cursor-pointer">
                   <Link
                     href="/profile"
                     className="block px-4 py-2 hover:bg-[#2d3250] transition"
@@ -49,7 +48,7 @@ export default function Header() {
                       signOut();
                       setDropdownOpen(false);
                     }}
-                    className="w-full text-left px-4 py-2 hover:bg-[#2d3250] transition"
+                    className="w-full text-left px-4 py-2 hover:bg-[#2d3250] transition cursor-pointer"
                   >
                     Sair
                   </button>

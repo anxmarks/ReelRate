@@ -18,7 +18,6 @@ export default function ReviewForm({ movieTmdbId, onReviewSubmitted }: ReviewFor
   const [hasReview, setHasReview] = useState(false);
   const [isChecking, setIsChecking] = useState(true);
 
-  // Verificar se o usuário já tem uma review para este filme
   useEffect(() => {
     const checkUserReview = async () => {
       if (!session?.user?.email) {
@@ -99,7 +98,7 @@ export default function ReviewForm({ movieTmdbId, onReviewSubmitted }: ReviewFor
       <button
         type="submit"
         disabled={loading || rating === 0}
-        className="bg-[#f9b17a] text-[#2d3250] font-semibold px-5 py-2 rounded-xl hover:bg-[#f6a25e] transition disabled:opacity-50"
+        className="bg-[#f9b17a] text-[#2d3250] font-semibold px-5 py-2 rounded-xl hover:bg-[#f6a25e] transition disabled:opacity-50 cursor-pointer"
       >
         {loading ? "Enviando..." : "Enviar avaliação"}
       </button>
