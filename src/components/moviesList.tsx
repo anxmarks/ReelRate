@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { useMovies } from "@/app/lib/hooks/useMovies";
-import { useSearchMovies } from "@/app/lib/hooks/useSearchMovies";
+import { useFilteredMovies } from "@/app/lib/hooks/useFilteredMovies";
 import { useMovieRatings } from "@/app/lib/hooks/useMovieRatings";
 import Link from "next/link";
 import Pagination from "@/components/Pagination";
@@ -10,11 +9,15 @@ import SearchBar from "@/components/SearchBar";
 import debounce from "lodash.debounce";
 import { Star } from "lucide-react";
 import { motion } from "framer-motion";
+import MovieFilters from "@/components/MovieFilters";
 
 export default function MoviesList() {
   const [page, setPage] = useState(1);
   const [query, setQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
+  const [genre, setGenre] = useState("");
+  const [year, setYear] = useState("");
+  const [rating, setRating] = useState(0);
 
   const debounceQuery = useCallback(
     debounce((value: string) => {
@@ -28,9 +31,12 @@ export default function MoviesList() {
     debounceQuery(query);
   }, [query, debounceQuery]);
 
-  const { data: moviesData, isLoading, error } = debouncedQuery
-    ? useSearchMovies(debouncedQuery, page)
-    : useMovies(page);
+  const { data: moviesData, isLoading, error } = useFilteredMovies({
+    query: debouncedQuery,
+    genre,
+    year,
+    page,
+  });
 
   const movieIds = moviesData?.results.map((movie: any) => movie.id) || [];
   const ratings = useMovieRatings(movieIds);
@@ -39,7 +45,19 @@ export default function MoviesList() {
     <div className="bg-[#2d3250] min-h-screen text-white px-6 py-10">
       <SearchBar value={query} onChange={setQuery} />
 
-      
+      <MovieFilters
+        genre={genre}
+        year={year}
+        onGenreChange={(g) => {
+          setGenre(g);
+          setPage(1);
+        }}
+        onYearChange={(y) => {
+          setYear(y);
+          setPage(1);
+        }}
+      />
+
       {isLoading && <p className="text-center mt-10 text-[#f9b17a]">Carregando filmes...</p>}
       {error && <p className="text-center text-red-500">Erro ao carregar filmes.</p>}
       {!isLoading && moviesData?.results?.length === 0 && (
@@ -59,22 +77,19 @@ export default function MoviesList() {
             >
               <Link href={`/movie/${movie.id}`} className="block">
                 <div className="relative bg-gradient-to-b from-[#424769] to-[#2d3250] rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group/card h-full">
-                  {/* Efeito de hover */}
                   <div className="absolute inset-0 bg-gradient-to-t from-[#f9b17a]/20 to-transparent opacity-0 group-hover/card:opacity-100 transition-opacity duration-300 z-10" />
-                  
-                  {/* Poster do filme */}
+
                   <div className="relative aspect-[2/3] overflow-hidden">
                     <img
                       src={
                         movie.poster_path
                           ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
-                          : '/placeholder-movie.jpg'
+                          : "/placeholder-movie.jpg"
                       }
                       alt={movie.title}
                       className="w-full h-full object-cover transition-transform duration-500 group-hover/card:scale-105"
                     />
-                    
-                    {/* Badge de rating */}
+
                     {rating !== undefined && (
                       <div className="absolute top-2 right-2 bg-[#f9b17a]/90 text-[#2d3250] font-bold text-[12px] px-2 py-1 rounded-full flex items-center gap-1 z-10">
                         <Star className="w-3 h-3 fill-current" />
@@ -82,20 +97,19 @@ export default function MoviesList() {
                       </div>
                     )}
                   </div>
-                  
-                  {/* Informações do filme */}
+
                   <div className="p-3">
                     <h3 className="text-white font-medium text-sm line-clamp-2 mb-2">
                       {movie.title}
                     </h3>
-                    
+
                     <div className="flex justify-between items-center">
                       {movie.release_date && (
                         <span className="text-[12px] text-gray-300">
                           {new Date(movie.release_date).getFullYear()}
                         </span>
                       )}
-                      
+
                       {rating !== undefined && (
                         <div className="flex items-center text-[#f9b17a] text-xs gap-1">
                           <Star className="w-3 h-3 fill-[#f9b17a]" />
