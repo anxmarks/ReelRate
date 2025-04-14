@@ -8,6 +8,7 @@ import Footer from "@/components/Footer";
 import axios from "axios";
 import { Pencil } from "lucide-react";
 import WatchLaterCard from "@/components/WatchLaterCard";
+import Link from "next/link";
 
 type Review = {
   id: string;
@@ -178,23 +179,22 @@ export default function Profile() {
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                   {userReviews.map((review) => (
-                    <div
-                      key={review.id}
-                      className="bg-[#424769] rounded-xl overflow-hidden shadow-lg border border-[#676f9d]/20 hover:scale-105 transition"
-                    >
-                      {review.movie?.poster_path && (
-                        <img
-                          src={`https://image.tmdb.org/t/p/w500${review.movie.poster_path}`}
-                          alt={review.movie.title}
-                          className="w-full h-100 object-cover"
-                        />
-                      )}
-                      <div className="p-4">
-                        <h3 className="text-lg font-bold">{review.movie?.title}</h3>
-                        <p className="text-[#f9b17a]">Nota: {review.rating} ⭐</p>
-                        <p className="text-gray-300 mt-2 text-sm">{review.comment}</p>
+                    <Link key={review.id} href={`/movie/${review.movie?.id}`} passHref>
+                      <div className="bg-[#424769] rounded-xl overflow-hidden shadow-lg border border-[#676f9d]/20 hover:scale-105 transition cursor-pointer">
+                        {review.movie?.poster_path && (
+                          <img
+                            src={`https://image.tmdb.org/t/p/w500${review.movie.poster_path}`}
+                            alt={review.movie.title}
+                            className="w-full h-100 object-cover"
+                          />
+                        )}
+                        <div className="p-4">
+                          <h3 className="text-lg font-bold">{review.movie?.title}</h3>
+                          <p className="text-[#f9b17a]">Nota: {review.rating} ⭐</p>
+                          <p className="text-gray-300 mt-2 text-sm">{review.comment}</p>
+                        </div>
                       </div>
-                    </div>
+                    </Link>
                   ))}
                 </div>
               )
@@ -215,7 +215,9 @@ export default function Profile() {
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                   {watchLaterMovies.map((movie) => (
-                    <WatchLaterCard key={movie.id} movieId={movie.id} />
+                    <Link key={movie.id} href={`/movie/${movie.id}`} passHref>
+                      <WatchLaterCard movieId={movie.id} />
+                    </Link>
                   ))}
                 </div>
               )

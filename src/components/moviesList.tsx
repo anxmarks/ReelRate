@@ -58,7 +58,15 @@ export default function MoviesList() {
         }}
       />
 
-      {isLoading && <p className="text-center mt-10 text-[#f9b17a]">Carregando filmes...</p>}
+      {isLoading && (
+        <div className="flex justify-center mt-10">
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ repeat: Infinity, duration: 1 }}
+            className="w-12 h-12 border-4 border-t-[#f9b17a] border-transparent rounded-full"
+          />
+        </div>
+      )}
       {error && <p className="text-center text-red-500">Erro ao carregar filmes.</p>}
       {!isLoading && moviesData?.results?.length === 0 && (
         <p className="text-center mt-10 text-[#676f9d]">Nenhum filme encontrado.</p>
