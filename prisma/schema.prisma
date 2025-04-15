@@ -17,6 +17,7 @@ model User {
   criado_em DateTime   @default(now())
   reviews   Review[]   @relation("UserReviews")
   watchLater WatchLater[] @relation("UserWatchLater")
+  watchList  WatchList[]  @relation("UserWatchList")
 
   @@map("users")
 }
@@ -39,4 +40,13 @@ model WatchLater {
   createdAt  DateTime @default(now())
 
   @@unique([userId, movieTmdbId]) 
+}
+
+model WatchList {
+  id          Int      @id @default(autoincrement())
+  user        User     @relation("UserWatchList", fields: [userId], references: [id])
+  userId      Int
+  nome        String
+  movieTmdbId Int[]
+  createdAt   DateTime @default(now()) 
 }
