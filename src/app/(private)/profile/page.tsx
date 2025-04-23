@@ -34,6 +34,7 @@ type WatchList = {
 export default function Profile() {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const [followerCount, setFollowerCount] = useState<number>(0);
   const [userReviews, setUserReviews] = useState<(Review & { movie: Movie | null })[]>([]);
   const [watchLaterMovies, setWatchLaterMovies] = useState<Movie[]>([]);
   const [selectedAvatar, setSelectedAvatar] = useState<string>("");
@@ -84,6 +85,23 @@ export default function Profile() {
   };
 
   useEffect(() => {
+
+    if (status === "unauthenticated") {
+      router.push("/login");
+    }
+
+    const fetchFollowerCount = async () => {
+      if (!session?.user?.email) return;
+
+      try {
+        const res = await axios.get("/api/user/followers/count");
+        setFollowerCount(res.data.followerCount);
+      } catch (error) {
+        console.error("Erro ao buscar quantidade de seguidores:", error);
+      }
+    };
+    fetchFollowerCount();
+
     const fetchUserAvatar = async () => {
       if (!session?.user?.email) return;
 
@@ -208,6 +226,10 @@ export default function Profile() {
               <div>
                 <span className="block text-2xl font-bold text-white">{watchLists.length}</span>
                 Listas
+              </div>
+              <div>
+                <span className="block text-2xl font-bold text-white">{followerCount}</span>
+                Seguidores
               </div>
             </div>
           </div>

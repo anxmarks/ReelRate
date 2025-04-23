@@ -173,19 +173,19 @@ export default function MoviePage(props: MoviePageProps) {
                     </button>
 
                     {showListOptions && (
-                      <div className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-[#424769] shadow-lg ring-1 ring-black/5 focus:outline-none">
-                        <div className="py-1">
+                      <div className="absolute right-0 z-20 mt-2 w-64 origin-top-right rounded-2xl bg-[#393d64] shadow-xl ring-1 ring-black/10">
+                        <div className="py-3 px-4 space-y-4">
                           {/* Listas existentes */}
                           {watchLists.length > 0 && (
-                            <div className="border-b border-[#676f9d] pb-2">
+                            <div className="space-y-1 border-b border-[#5e6389] pb-3">
                               {watchLists.map((list) => (
                                 <button
                                   key={list.id}
                                   onClick={() => handleAddToList(list.id)}
-                                  className={`block w-full px-4 py-2 text-left text-sm ${list.movieTmdbId.includes(movie.id)
-                                      ? "text-[#f9b17a] font-medium"
-                                      : "text-white"
-                                    } hover:bg-[#676f9d]`}
+                                  className={`w-full text-left px-3 py-2 rounded-lg text-sm transition cursor-pointer
+                ${list.movieTmdbId.includes(movie.id)
+                                      ? "text-[#f9b17a] bg-[#2d3250] font-semibold"
+                                      : "text-white hover:bg-[#4e537e]"}`}
                                 >
                                   {list.nome} {list.movieTmdbId.includes(movie.id) && "✓"}
                                 </button>
@@ -193,29 +193,34 @@ export default function MoviePage(props: MoviePageProps) {
                             </div>
                           )}
 
-                          {/* Opção para criar nova lista (sempre visível) */}
-                          <div className="px-4 py-2">
-                            <p className="text-sm text-white mb-2">
-                              {watchLists.length > 0 ? "Criar nova lista" : "Nenhuma lista criada"}
+                          {/* Criar nova lista */}
+                          <div className="space-y-2">
+                            <p className="text-sm text-white font-medium">
+                              {watchLists.length > 0 ? "Criar nova lista" : "Nenhuma lista criada ainda"}
                             </p>
-                            <input
-                              type="text"
-                              value={tempListName}
-                              onChange={(e) => setTempListName(e.target.value)}
-                              className="w-full px-2 py-1 text-sm text-black rounded"
-                              onKeyDown={(e) => e.key === 'Enter' && handleCreateNewList()}
-                              onFocus={(e) => e.target.select()}
-                            />
-                            <button
-                              onClick={handleCreateNewList}
-                              className="mt-2 w-full bg-orange-500 text-white px-2 py-1 text-sm rounded hover:bg-orange-600"
-                            >
-                              Criar lista
-                            </button>
+                            <div className="flex flex-wrap gap-2">
+                              <input
+                                type="text"
+                                value={tempListName}
+                                onChange={(e) => setTempListName(e.target.value)}
+                                placeholder="Nome da nova lista"
+                                className="w-full px-4 py-2 text-sm rounded-lg bg-[#2d3250] text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                                onKeyDown={(e) => e.key === 'Enter' && handleCreateNewList()}
+                                onFocus={(e) => e.target.select()}
+                              />
+                              <button
+                                onClick={handleCreateNewList}
+                                className="w-full px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white text-sm font-semibold rounded-lg transition cursor-pointer"
+                              >
+                                Criar
+                              </button>
+                            </div>
                           </div>
                         </div>
                       </div>
                     )}
+
+
                   </div>
                 </div>
               )}

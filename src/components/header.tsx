@@ -5,6 +5,7 @@ import { Menu, X, UserCircle } from "lucide-react";
 import { useSession, signOut } from "next-auth/react";
 import { useState } from "react";
 
+
 export default function Header() {
   const { data: session } = useSession();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -23,8 +24,10 @@ export default function Header() {
 
         <nav className="hidden md:flex items-center gap-10 text-sm font-medium text-white">
           <Link href="/" className="hover:text-[#f9b17a] transition">Home</Link>
-          <Link href="/reviews" className="hover:text-[#f9b17a] transition">Avaliações</Link>
-
+         
+          {session ? ( <Link href="/follow" className="hover:text-[#f9b17a] transition">Amigos</Link>) : null}
+          {session ? ( <Link href="/reviews" className="hover:text-[#f9b17a] transition">Avaliações</Link>) : null}
+          
           {session ? (
             <div className="relative ">
               <button
@@ -73,8 +76,9 @@ export default function Header() {
       {mobileMenuOpen && (
         <div className="md:hidden bg-[#424769] border-t border-[#676f9d] px-6 py-4 space-y-4 text-white">
           <Link href="/" className="block hover:text-[#f9b17a]" onClick={() => setMobileMenuOpen(false)}>Home</Link>
-          <Link href="/reviews" className="block hover:text-[#f9b17a]" onClick={() => setMobileMenuOpen(false)}>Avaliações</Link>
-
+          {session ? ( <Link href="/reviews" className="block hover:text-[#f9b17a]" onClick={() => setMobileMenuOpen(false)}>Avaliações</Link>) : null}
+          {session ? ( <Link href="/follow" className="block hover:text-[#f9b17a]" onClick={() => setMobileMenuOpen(false)}>Amigos</Link>) : null}
+          
           {session ? (
             <>
               <Link href="/profile" className="block hover:text-[#f9b17a]" onClick={() => setMobileMenuOpen(false)}>Perfil</Link>

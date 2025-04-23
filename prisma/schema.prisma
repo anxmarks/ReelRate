@@ -18,6 +18,8 @@ model User {
   reviews   Review[]   @relation("UserReviews")
   watchLater WatchLater[] @relation("UserWatchLater")
   watchList  WatchList[]  @relation("UserWatchList")
+  followers   Follow[]   @relation("Followings")
+  following   Follow[]   @relation("Followers")
 
   @@map("users")
 }
@@ -49,4 +51,15 @@ model WatchList {
   nome        String
   movieTmdbId Int[]
   createdAt   DateTime @default(now()) 
+}
+
+model Follow {
+  id         Int   @id @default(autoincrement())
+  follower   User  @relation("Followers", fields: [followerId], references: [id])
+  followerId Int
+  following  User  @relation("Followings", fields: [followingId], references: [id])
+  followingId Int
+  createdAt  DateTime @default(now())
+
+  @@unique([followerId, followingId])
 }

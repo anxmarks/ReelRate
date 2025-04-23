@@ -17,6 +17,7 @@ const fetchFilteredMovies = async ({ query, genre, year, page }: FilterOptions) 
     language: "pt-BR",
     page,
     include_adult: false,
+    adult: false,
   };
 
   let endpoint = "";
@@ -32,7 +33,10 @@ const fetchFilteredMovies = async ({ query, genre, year, page }: FilterOptions) 
   }
 
   const response = await axios.get(endpoint, { params });
-  return response.data;
+
+  const filteredResults = response.data.results.filter((movie: any) => !movie.adult);
+
+  return { ...response.data, results: filteredResults };
 };
 
 export const useFilteredMovies = (filters: FilterOptions) => {
