@@ -9,6 +9,7 @@ import axios from "axios";
 import { Pencil } from "lucide-react";
 import WatchLaterCard from "@/components/WatchLaterCard";
 import Link from "next/link";
+import { toast } from "react-toastify";
 
 type Review = {
   id: string;
@@ -23,6 +24,13 @@ type Movie = {
   poster_path: string;
 };
 
+type WatchList = {
+  id: number;
+  nome: string;
+  movieTmdbId: number[];
+  createdAt: string;
+};
+
 export default function Profile() {
   const { data: session, status } = useSession();
   const router = useRouter();
@@ -32,6 +40,8 @@ export default function Profile() {
   const [showModal, setShowModal] = useState(false);
   const [showReviewed, setShowReviewed] = useState(true);
   const [showWatchLater, setShowWatchLater] = useState(true);
+  const [watchLists, setWatchLists] = useState<WatchList[]>([]);
+  const [expandedListId, setExpandedListId] = useState<number | null>(null);
 
   const avatarOptions = [
     "/avatars/avatar1.png",
@@ -48,6 +58,29 @@ export default function Profile() {
     await axios.put("/api/user/avatar", { avatar: selectedAvatar });
     setShowModal(false);
     router.refresh();
+  };
+
+  const handleRemoveFromList = async (listId: number, movieTmdbId: number) => {
+    try {
+      const response = await axios.delete('/api/watch-lists/remove-movie', {
+        data: { listId, movieTmdbId }
+      });
+
+      setWatchLists(watchLists.map(list => {
+        if (list.id === listId) {
+          return {
+            ...list,
+            movieTmdbId: list.movieTmdbId.filter(id => id !== movieTmdbId)
+          };
+        }
+        return list;
+      }));
+
+      toast.success(`Filme removido da lista!`);
+    } catch (error) {
+      console.error("Erro ao remover filme:", error);
+      toast.error("Erro ao remover filme");
+    }
   };
 
   useEffect(() => {
@@ -106,8 +139,18 @@ export default function Profile() {
       }
     };
 
+    const fetchWatchLists = async () => {
+      try {
+        const res = await axios.get("/api/watch-lists");
+        setWatchLists(res.data);
+      } catch (err) {
+        console.error("Erro ao buscar listas:", err);
+      }
+    };
+
     fetchReviews();
     fetchWatchLater();
+    fetchWatchLists();
   }, [session, status, router]);
 
   useEffect(() => {
@@ -127,6 +170,10 @@ export default function Profile() {
   if (status === "loading") {
     return <p className="text-center text-gray-300">Carregando...</p>;
   }
+
+  const toggleList = (listId: number) => {
+    setExpandedListId(expandedListId === listId ? null : listId);
+  };
 
   const userImage = selectedAvatar || "/avatars/default-profile.png";
 
@@ -159,8 +206,8 @@ export default function Profile() {
                 Avaliados
               </div>
               <div>
-                <span className="block text-2xl font-bold text-white">{watchLaterMovies.length}</span>
-                Para assistir
+                <span className="block text-2xl font-bold text-white">{watchLists.length}</span>
+                Listas
               </div>
             </div>
           </div>
@@ -201,23 +248,66 @@ export default function Profile() {
             )}
           </div>
 
-          {/* Assistir Mais Tarde */}
+          {/* Minhas listas */}
           <div>
             <div className="flex items-center justify-between mb-4 mt-10">
-              <h2 className="text-2xl font-bold text-[#f9b17a]">Assistir mais tarde</h2>
-              <button onClick={() => setShowWatchLater(!showWatchLater)} className="text-[#f9b17a] transition-transform">
+              <h2 className="text-2xl font-bold text-[#f9b17a]">Minhas listas</h2>
+              <button
+                onClick={() => setShowWatchLater(!showWatchLater)}
+                className="text-[#f9b17a] transition-transform"
+              >
                 <span className={`inline-block transform ${showWatchLater ? "rotate-90" : "-rotate-90"}`}>▶</span>
               </button>
             </div>
+
             {showWatchLater && (
-              watchLaterMovies.length === 0 ? (
-                <p className="text-gray-400">Nenhum filme salvo para assistir depois.</p>
+              watchLists.length === 0 ? (
+                <p className="text-gray-400">Nenhuma lista criada.</p>
               ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                  {watchLaterMovies.map((movie) => (
-                    <Link key={movie.id} href={`/movie/${movie.id}`} passHref>
-                      <WatchLaterCard movieId={movie.id} />
-                    </Link>
+                <div className="space-y-4">
+                  {watchLists.map((list) => (
+                    <div key={list.id} className="bg-[#424769] rounded-lg p-4">
+                      <div
+                        onClick={() => toggleList(list.id)}
+                        className="flex justify-between items-center cursor-pointer"
+                      >
+                        <h3 className="font-medium text-lg text-[#f9b17a]">{list.nome}</h3>
+                        <span className={`transition-transform ${expandedListId === list.id ? "rotate-90" : ""}`}>
+                          ▶
+                        </span>
+                      </div>
+
+                      {expandedListId === list.id && (
+                        <div className="mt-4">
+                          {list.movieTmdbId.length === 0 ? (
+                            <p className="text-gray-400 ml-4">Nenhum filme nesta lista.</p>
+                          ) : (
+                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-4 ml-4">
+                              {list.movieTmdbId.map((movieId) => (
+                                <div key={movieId} className="relative group">
+                                  <Link href={`/movie/${movieId}`} passHref>
+                                    <WatchLaterCard movieId={movieId} />
+                                  </Link>
+                                  <button
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      e.stopPropagation();
+                                      handleRemoveFromList(list.id, movieId);
+                                    }}
+                                    className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                                    title="Remover da lista"
+                                  >
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                  </button>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
                   ))}
                 </div>
               )
