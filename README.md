@@ -20,7 +20,7 @@ O **ReelRate** é uma aplicação para amantes do cinema, permitindo avaliar fil
 ## 📸 Exemplos de Tela
 
 - **Página Inicial (Home)**  
-<img src="./media/home.jpg" width="600px" />
+![Home](media/home.jpg)
 
 - **Página de Amigos**  
 ![Friends Screenshot](media/friends.jpg)
