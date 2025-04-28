@@ -45,13 +45,21 @@ O **ReelRate** é uma aplicação para amantes do cinema, permitindo avaliar fil
 ## 🛠️ Tecnologias Utilizadas
 
 🔵 Next.js
+
 🔵 TypeScript
+
 🔵 Prisma
+
 🔵 Supabase
+
 🔵 PostgreSQL
+
 🔵 Tailwind CSS
+
 🔵 TanStack Query
+
 🔵 Next Auth
+
 🔵 Axios
 
 ---
