@@ -37,6 +37,9 @@ O **ReelRate** é uma aplicação para amantes do cinema, permitindo avaliar fil
 - **Perfil do Usuário**  
 ![Movie Lists](media/listas.jpg)
 
+- **Avatares Disponíveis**  
+![Avatares](media/avatares.png)
+
 ---
 
 ## 🛠️ Tecnologias Utilizadas
