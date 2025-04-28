@@ -21,16 +21,54 @@ O **ReelRate** é uma aplicação para amantes do cinema, permitindo avaliar fil
 - **Página Inicial (Home)**  
 <img src="./media/home.jpg" width="600px" />
 
+- **Página de Amigos**  
+![Friends Screenshot](media/friends.jpg)
+
+- **Página de Avaliações**  
+![Reviews Screenshot](media/avaliacoes.jpg)
+
+- **Detalhes do Filme**  
+![Movie Details Screenshot](media/ficha_filme.jpg)
+
+- **Perfil do Usuário**  
+![Profile Screenshot](media/perfil.jpg)
+
+- **Perfil do Usuário**  
+![Movie Lists](media/listas.jpg)
 
 ---
 
+## 🛠️ Tecnologias Utilizadas
 
-Guia de Instalação:
+🔵 Next.js
+🔵 TypeScript
+🔵 Prisma
+🔵 Supabase
+🔵 PostgreSQL
+🔵 Tailwind CSS
+🔵 TanStack Query
+🔵 Next Auth
+🔵 Axios
+
+---
+
+## 🚀 Como Rodar o Projeto Localmente
 
 ```bash
   cd pasta do projeto
   npm install
-  npx prisma migrate dev --name init
   npx prisma generate
   npm run dev
 ```
+
+---
+
+## 👨‍💻 Desenvolvedores
+
+| Nome | GitHub | LinkedIn |
+|:----|:------|:---------|
+| Gabryel Willers | [@Gabryel-w](https://github.com/Gabryel-w) | [LinkedIn](https://www.linkedin.com/in/gabryel-willers-124426238/) |
+| Julia Jung | [@juliazjung](https://github.com/juliazjung) | [LinkedIn](https://www.linkedin.com/in/juliazjung/) |
+| Ana Luiza Marks | [@anxmarks](https://github.com/anxmarks) | [LinkedIn](https://www.linkedin.com/in/ana-luiza-marks-241252252/) |
+
+---
