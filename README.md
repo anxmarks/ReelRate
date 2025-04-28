@@ -1,6 +1,7 @@
 ![logo](media/logo.png)
 
 # 🎥 ReelRate
+[ReelRate](https://reel-rate.vercel.app/)
 
 O **ReelRate** é uma aplicação para amantes do cinema, permitindo avaliar filmes e interagir com outros usuários. Integrado à API da **TMDB**, oferece uma vasta seleção de títulos para explorar!
 
