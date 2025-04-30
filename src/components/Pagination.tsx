@@ -4,36 +4,25 @@ type PaginationProps = {
   onPageChange: (page: number) => void;
 };
 
-const generatePagination = (currentPage: number, totalPages: number) => {
-  const delta = 2;
-  const range = [];
-  const rangeWithDots = [];
+const generatePagination = (
+  currentPage: number,
+  totalPages: number,
+  blockSize: number = 10
+) => {
+  const currentBlock = Math.ceil(currentPage / blockSize);
+  const startPage = (currentBlock - 1) * blockSize + 1;
+  const endPage = Math.min(currentBlock * blockSize, totalPages);
 
-  let l: number = 0;
-
-  for (let i = 1; i <= totalPages; i++) {
-    if (
-      i === 1 ||
-      i === totalPages ||
-      (i >= currentPage - delta && i <= currentPage + delta)
-    ) {
-      range.push(i);
-    }
+  const pages = [];
+  for (let i = startPage; i <= endPage; i++) {
+    pages.push(i);
   }
 
-  for (let i of range) {
-    if (l) {
-      if (i - l === 2) {
-        rangeWithDots.push(l + 1);
-      } else if (i - l !== 1) {
-        rangeWithDots.push("...");
-      }
-    }
-    rangeWithDots.push(i);
-    l = i;
-  }
-
-  return rangeWithDots;
+  return {
+    pages,
+    hasPreviousBlock: startPage > 1,
+    hasNextBlock: endPage < totalPages,
+  };
 };
 
 export default function Pagination({
@@ -41,48 +30,67 @@ export default function Pagination({
   totalPages,
   onPageChange,
 }: PaginationProps) {
-  const pages = generatePagination(currentPage, totalPages);
+  const blockSize = 10; // Número de páginas por bloco
+  const { pages, hasPreviousBlock, hasNextBlock } = generatePagination(
+    currentPage,
+    totalPages,
+    blockSize
+  );
 
   return (
     <div className="flex flex-wrap justify-center items-center gap-2 mt-6 text-white">
-      {/* Anterior */}
+      {/* Botão para o bloco anterior */}
+      {hasPreviousBlock && (
+        <button
+          onClick={() => onPageChange(pages[0] - 1)}
+          className="px-4 py-2 bg-zinc-800 rounded-lg hover:bg-zinc-700 transition-all"
+        >
+          {"<<"}
+        </button>
+      )}
+
+      {/* Botão para a página anterior */}
       <button
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 1}
-        className="px-3 py-2 bg-zinc-800 rounded-lg hover:bg-zinc-700 disabled:opacity-50"
+        className="px-4 py-2 bg-zinc-800 rounded-lg hover:bg-zinc-700 disabled:opacity-50 transition-all"
       >
         ⬅
       </button>
 
-      {/* Páginas */}
-      {pages.map((page, idx) =>
-        typeof page === "number" ? (
-          <button
-            key={idx}
-            onClick={() => onPageChange(page)}
-            className={`px-3 py-2 rounded-lg transition-all ${
-              page === currentPage
-                ? "bg-[#f9b17a] text-black font-semibold"
-                : "bg-zinc-800 hover:bg-zinc-700"
-            }`}
-          >
-            {page}
-          </button>
-        ) : (
-          <span key={idx} className="px-3 py-2 text-zinc-400 select-none">
-            ...
-          </span>
-        )
-      )}
+      {/* Páginas do bloco atual */}
+      {pages.map((page) => (
+        <button
+          key={page}
+          onClick={() => onPageChange(page)}
+          className={`px-4 py-2 rounded-lg transition-all ${
+            page === currentPage
+              ? "bg-[#f9b17a] text-black font-semibold"
+              : "bg-zinc-800 hover:bg-zinc-700"
+          }`}
+        >
+          {page}
+        </button>
+      ))}
 
-      {/* Próxima */}
+      {/* Botão para a próxima página */}
       <button
         onClick={() => onPageChange(currentPage + 1)}
         disabled={currentPage === totalPages}
-        className="px-3 py-2 bg-zinc-800 rounded-lg hover:bg-zinc-700 disabled:opacity-50"
+        className="px-4 py-2 bg-zinc-800 rounded-lg hover:bg-zinc-700 disabled:opacity-50 transition-all"
       >
         ➡
       </button>
+
+      {/* Botão para o próximo bloco */}
+      {hasNextBlock && (
+        <button
+          onClick={() => onPageChange(pages[pages.length - 1] + 1)}
+          className="px-4 py-2 bg-zinc-800 rounded-lg hover:bg-zinc-700 transition-all"
+        >
+          {">>"}
+        </button>
+      )}
     </div>
   );
 }

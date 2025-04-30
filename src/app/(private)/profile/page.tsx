@@ -34,6 +34,9 @@ type WatchList = {
 export default function Profile() {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const [showEditModal, setShowEditModal] = useState(false); // Controla a exibição do modal
+  const [selectedListId, setSelectedListId] = useState<number | null>(null); // ID da lista selecionada para edição
+  const [newListName, setNewListName] = useState<string>(""); // Novo nome da lista
   const [followerCount, setFollowerCount] = useState<number>(0);
   const [userReviews, setUserReviews] = useState<(Review & { movie: Movie | null })[]>([]);
   const [watchLaterMovies, setWatchLaterMovies] = useState<Movie[]>([]);
@@ -81,6 +84,30 @@ export default function Profile() {
     } catch (error) {
       console.error("Erro ao remover filme:", error);
       toast.error("Erro ao remover filme");
+    }
+  };
+
+  const handleDeleteList = async (listId: number) => {
+    try {
+      await axios.delete("/api/watch-lists", { data: { listId } });
+      setWatchLists((prev) => prev.filter((list) => list.id !== listId));
+      toast.success("Lista deletada com sucesso!");
+    } catch (error) {
+      console.error("Erro ao deletar lista:", error);
+      toast.error("Erro ao deletar lista");
+    }
+  };
+
+  const handleEditList = async (listId: number, newName: string) => {
+    try {
+      const res = await axios.put("/api/watch-lists", { listId, nome: newName });
+      setWatchLists((prev) =>
+        prev.map((list) => (list.id === listId ? { ...list, nome: res.data.nome } : list))
+      );
+      toast.success("Lista editada com sucesso!");
+    } catch (error) {
+      console.error("Erro ao editar lista:", error);
+      toast.error("Erro ao editar lista");
     }
   };
 
@@ -271,6 +298,7 @@ export default function Profile() {
           </div>
 
           {/* Minhas listas */}
+          {/* Minhas listas */}
           <div>
             <div className="flex items-center justify-between mb-4 mt-10">
               <h2 className="text-2xl font-bold text-[#f9b17a]">Minhas listas</h2>
@@ -289,16 +317,55 @@ export default function Profile() {
                 <div className="space-y-4">
                   {watchLists.map((list) => (
                     <div key={list.id} className="bg-[#424769] rounded-lg p-4">
-                      <div
-                        onClick={() => toggleList(list.id)}
-                        className="flex justify-between items-center cursor-pointer"
-                      >
-                        <h3 className="font-medium text-lg text-[#f9b17a]">{list.nome}</h3>
-                        <span className={`transition-transform ${expandedListId === list.id ? "rotate-90" : ""}`}>
-                          ▶
-                        </span>
+                      {/* Header da lista */}
+                      <div className="flex justify-between items-center">
+                        <div
+                          onClick={() => toggleList(list.id)}
+                          className="flex items-center gap-2 cursor-pointer"
+                        >
+                          <h3 className="font-medium text-lg text-[#f9b17a]">{list.nome}</h3>
+                          <span className={`transition-transform ${expandedListId === list.id ? "rotate-90" : ""}`}>
+                            ▶
+                          </span>
+                        </div>
+                        <div className="flex gap-2">
+                          {/* Botão de editar lista */}
+                          <button
+                            onClick={() => {
+                              setSelectedListId(list.id);
+                              setNewListName(list.nome);
+                              setShowEditModal(true);
+                            }}
+                            className="flex items-center cursor-pointer gap-1 text-blue-500 hover:text-blue-400"
+                          >
+                            <Pencil className="w-4 h-4" />
+                            Editar
+                          </button>
+                          {/* Botão de deletar lista */}
+                          <button
+                            onClick={() => handleDeleteList(list.id)}
+                            className="flex cursor-pointer items-center gap-1 text-red-500 hover:text-red-400"
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              className="w-4 h-4"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M19 7l-1 12a2 2 0 01-2 2H8a2 2 0 01-2-2L5 7m5 4v6m4-6v6M4 7h16M10 3h4m-4 0a1 1 0 00-1 1v1h6V4a1 1 0 00-1-1m-4 0h4"
+                              />
+                            </svg>
+                            Deletar
+                          </button>
+                        </div>
                       </div>
 
+                      {/* Conteúdo da lista (expandido) */}
                       {expandedListId === list.id && (
                         <div className="mt-4">
                           {list.movieTmdbId.length === 0 ? (
@@ -310,13 +377,14 @@ export default function Profile() {
                                   <Link href={`/movie/${movieId}`} passHref>
                                     <WatchLaterCard movieId={movieId} />
                                   </Link>
+                                  {/* Botão de remover filme da lista */}
                                   <button
                                     onClick={(e) => {
                                       e.preventDefault();
                                       e.stopPropagation();
                                       handleRemoveFromList(list.id, movieId);
                                     }}
-                                    className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                                    className="absolute cursor-pointer top-2 right-2 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
                                     title="Remover da lista"
                                   >
                                     <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -335,6 +403,41 @@ export default function Profile() {
               )
             )}
           </div>
+
+          {/* Modal de edição de lista */}
+          {showEditModal && (
+            <div className="fixed inset-0 bg-black/70 flex justify-center items-center z-50">
+              <div className="bg-[#2d3250] p-6 rounded-xl shadow-lg border border-[#676f9d] w-[90%] max-w-md">
+                <h2 className="text-xl font-bold text-center mb-4 text-white">Editar Lista</h2>
+                <input
+                  type="text"
+                  value={newListName}
+                  onChange={(e) => setNewListName(e.target.value)}
+                  className="w-full px-4 py-2 rounded-md bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#f9b17a]"
+                  placeholder="Digite o novo nome da lista"
+                />
+                <div className="flex justify-end gap-2 mt-6">
+                  <button
+                    onClick={() => setShowEditModal(false)}
+                    className="px-4 py-2 rounded-md bg-gray-500 text-white hover:bg-gray-600 cursor-pointer"
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    onClick={() => {
+                      if (selectedListId !== null) {
+                        handleEditList(selectedListId, newListName);
+                      }
+                      setShowEditModal(false);
+                    }}
+                    className="px-4 py-2 rounded-md bg-blue-500 text-white hover:bg-blue-600 cursor-pointer"
+                  >
+                    Salvar
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
