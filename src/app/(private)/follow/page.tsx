@@ -190,9 +190,6 @@ export default function FollowPage() {
                       <p className="text-white font-semibold text-sm sm:text-lg truncate">
                         {user.nome}
                       </p>
-                      <p className="text-gray-400 text-xs sm:text-sm truncate">
-                        {user.email}
-                      </p>
                     </div>
                   </div>
                   <button
