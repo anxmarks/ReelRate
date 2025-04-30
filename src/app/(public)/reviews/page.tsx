@@ -45,13 +45,8 @@ export default function AllReviewsPage() {
             router.push("/login");
         }
     }, [status, router]);
-
-    if (status === "loading" || status === "unauthenticated") {
-        return <div className="text-white text-center">Carregando...</div>;
-    }
-
-    useEffect(() => {
     
+    useEffect(() => {
         const fetchGeneralReviews = async () => {
             try {
                 const res = await axios.get<Review[]>("/api/reviews/all");
@@ -61,7 +56,7 @@ export default function AllReviewsPage() {
                 console.error("Erro ao carregar avaliações gerais:", error);
             }
         };
-
+    
         const fetchFollowingReviews = async () => {
             try {
                 const res = await axios.get<Review[]>("/api/reviews/following");
@@ -71,31 +66,37 @@ export default function AllReviewsPage() {
                 console.error("Erro ao carregar avaliações dos usuários seguidos:", error);
             }
         };
-
+    
         const fetchMoviesAndAvatars = async (reviews: Review[]) => {
-            const uniqueIds = Array.from(new Set(reviews.map((r) => r.movieTmdbId)));
-            const moviePromises = uniqueIds.map(async (id) => {
-                const res = await fetch(`https://api.themoviedb.org/3/movie/${id}?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&language=pt-BR`);
-                const data = await res.json();
-                return { id, title: data.title };
-            });
-
-            const movieResults = await Promise.all(moviePromises);
-            const movieMap: MovieData = {};
-            movieResults.forEach(({ id, title }) => {
-                movieMap[id] = title;
-            });
-            setMovies((prev) => ({ ...prev, ...movieMap }));
-
-            const uniqueEmails = Array.from(new Set(reviews.map((r) => r.user.email)));
-            await fetchAvatars(uniqueEmails);
+            try {
+                const uniqueIds = Array.from(new Set(reviews.map((r) => r.movieTmdbId)));
+                const moviePromises = uniqueIds.map(async (id) => {
+                    const res = await fetch(
+                        `https://api.themoviedb.org/3/movie/${id}?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&language=pt-BR`
+                    );
+                    const data = await res.json();
+                    return { id, title: data.title };
+                });
+    
+                const movieResults = await Promise.all(moviePromises);
+                const movieMap: MovieData = {};
+                movieResults.forEach(({ id, title }) => {
+                    movieMap[id] = title;
+                });
+                setMovies((prev) => ({ ...prev, ...movieMap }));
+    
+                const uniqueEmails = Array.from(new Set(reviews.map((r) => r.user.email)));
+                await fetchAvatars(uniqueEmails);
+            } catch (error) {
+                console.error("Erro ao buscar filmes e avatares:", error);
+            }
         };
-
+    
         const fetchAvatars = async (emails: string[]) => {
             try {
                 setLoadingAvatars(true);
                 const avatarMap: AvatarData = {};
-
+    
                 await Promise.all(
                     emails.map(async (email) => {
                         try {
@@ -107,7 +108,7 @@ export default function AllReviewsPage() {
                         }
                     })
                 );
-
+    
                 setAvatars((prev) => ({ ...prev, ...avatarMap }));
             } catch (error) {
                 console.error("Erro ao buscar avatares:", error);
@@ -115,7 +116,7 @@ export default function AllReviewsPage() {
                 setLoadingAvatars(false);
             }
         };
-
+    
         fetchGeneralReviews();
         fetchFollowingReviews();
     }, []);
